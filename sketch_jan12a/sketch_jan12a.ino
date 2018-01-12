@@ -1,85 +1,108 @@
-#define LEFT_IR 8
-#define RIGHT_IR 7
+#define LEFT_IR A0
+#define RIGHT_IR A1
 
 #define LEFT_M_FWD 9
 #define LEFT_M_RVS 10
 #define RIGHT_M_FWD 6 
 #define RIGHT_M_RVS 5 
 
+#define P100 180
+#define P50 127
+#define P0 0
+
+#define IR_THRESHOLD 100
+
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
+typedef enum { WHITE, BLACK } Color;
 
 int left_ir;
 int right_ir;
 
+Color left_col;
+Color right_col;
+
 
 void setup() {
   //Setup Channel A
-  pinMode(RIGHT_M_RVS, OUTPUT); //Initiates Motor Channel A pin
-  pinMode(RIGHT_M_FWD, OUTPUT); //Initiates Brake Channel A pin
-
-  pinMode(LEFT_M_FWD, OUTPUT); //Initiates Motor Channel A pin
-  pinMode(LEFT_M_RVS, OUTPUT);
+//  pinMode(RIGHT_M_RVS, OUTPUT); //Initiates Motor Channel A pin
+//  pinMode(RIGHT_M_FWD, OUTPUT); //Initiates Brake Channel A pin
+//
+//  pinMode(LEFT_M_FWD, OUTPUT); //Initiates Motor Channel A pin
+//  pinMode(LEFT_M_RVS, OUTPUT);
   Serial.begin(9600);
 }
 
 void loop() {
 
-  left_ir = digitalRead(LEFT_IR);
-  right_ir = digitalRead(RIGHT_IR);
+  motor(STP);
+  left_ir = analogRead(LEFT_IR);
+  right_ir = analogRead(RIGHT_IR);
 
   Serial.print(left_ir);
   Serial.print(", ");
   Serial.println(right_ir);
 
-  if ((left_ir | right_ir) == 0) {
+  left_col = read_ir(left_ir);
+  right_col = read_ir(right_ir);
+
+  if (left_col == WHITE && right_col == WHITE) {
     motor(FWD);
-  } else if (left_ir && !right_ir) {
+  } else if (left_col == BLACK && right_col == WHITE) {
     motor(LFT);
-  } else if (!left_ir && right_ir) {
+  } else if (left_col == WHITE && right_col == BLACK) {
     motor(RHT);
   } else {
     motor(STP);
   }
+  delay(50);
 }
 
 void motor(Dir dir) {
   switch(dir) {
     case FWD:
-      digitalWrite(LEFT_M_FWD, HIGH);
-      digitalWrite(LEFT_M_RVS, LOW);
+      analogWrite(LEFT_M_FWD, P100);
+      analogWrite(LEFT_M_RVS, P0);
       
-      digitalWrite(RIGHT_M_FWD, HIGH);
-      digitalWrite(RIGHT_M_RVS, LOW);
+      analogWrite(RIGHT_M_FWD, P100);
+      analogWrite(RIGHT_M_RVS, P0);
       break;
     case RVS:
-      digitalWrite(LEFT_M_FWD, LOW);
-      digitalWrite(LEFT_M_RVS, HIGH);
+      analogWrite(LEFT_M_FWD, P0);
+      analogWrite(LEFT_M_RVS, P100);
       
-      digitalWrite(RIGHT_M_FWD, LOW);
-      digitalWrite(RIGHT_M_RVS, HIGH);
+      analogWrite(RIGHT_M_FWD, P0);
+      analogWrite(RIGHT_M_RVS, P100);
       break;
     case LFT:
-      digitalWrite(LEFT_M_FWD, LOW);
-      digitalWrite(LEFT_M_RVS, HIGH);
+      analogWrite(LEFT_M_FWD, P0);
+      analogWrite(LEFT_M_RVS, P100);
 
-      digitalWrite(RIGHT_M_FWD, HIGH);
-      digitalWrite(RIGHT_M_RVS, LOW);
+      analogWrite(RIGHT_M_FWD, P100);
+      analogWrite(RIGHT_M_RVS, P0);
       break;
     case RHT:
-      digitalWrite(LEFT_M_FWD, HIGH);
-      digitalWrite(LEFT_M_RVS, LOW);
+      analogWrite(LEFT_M_FWD, P100);
+      analogWrite(LEFT_M_RVS, P0);
 
-      digitalWrite(RIGHT_M_FWD, LOW);
-      digitalWrite(RIGHT_M_RVS, HIGH);
+      analogWrite(RIGHT_M_FWD, P0);
+      analogWrite(RIGHT_M_RVS, P100);
       break;
      case STP:
      default:
-      digitalWrite(LEFT_M_FWD, LOW);
-      digitalWrite(LEFT_M_RVS, LOW);
+      analogWrite(LEFT_M_FWD, P0);
+      analogWrite(LEFT_M_RVS, P0);
       
-      digitalWrite(RIGHT_M_FWD, LOW);
-      digitalWrite(RIGHT_M_RVS, LOW);
+      analogWrite(RIGHT_M_FWD, P0);
+      analogWrite(RIGHT_M_RVS, P0);
       break;
+  }
+}
+
+Color read_ir(int reading) {
+  if (reading > IR_THRESHOLD) {
+    return BLACK;
+  } else {
+    return WHITE;
   }
 }
 
