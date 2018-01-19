@@ -2,7 +2,7 @@
  ## Project objectives (Irusha)
  ## Stakeholders (Charlie)
  * Customer: Prof. A.-M. Cretu 
- * Group Members: Irusha, Domonik, Charlie
+ * Group Members: Irusha, Dominik, Charlie
  ## Project scope (Dominik)
  ## Major deliverables (Irusha)
  ## Assumptions (Charlie)
