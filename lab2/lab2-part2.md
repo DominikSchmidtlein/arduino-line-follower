@@ -6,3 +6,9 @@
 5. **How do we work through problems?** By opening a dialouge when issues are surfaced and planning a solution for it together,
 6. **How do we fit in with other groups?** We strive to keep communications with other groups at a high level when it comes to getting and giving feedback.
 7. **What benefits do team members need from the team?** We will all strengthen our technical expertise in Arduino programming as well as project management.
+
+# Team Charter
+* Weekly Meeting: Thursdays at 4 PM
+* Meeting Teamplate: Available on the lab 2 folder, with the filename "Team Meeting.docx"
+* Code and Document Management System: Github
+* Communication TOol: Facebook Messenger Group
