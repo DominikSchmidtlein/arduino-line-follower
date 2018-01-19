@@ -47,3 +47,16 @@ We chose the Team Type (Executive) to be the match for ESTJ-A.
 * Facilitator: Irusha
 
 
+
+# Technical abilities
+## Dominik: 
+* Arduino experience, Coding experience in multiple languages  
+## Charlie:
+* Coding Experience in multiple languages , have worked with both the arduino and raspberry PI ,  
+## Irusha: 
+* Arduino Experience, Bluetooth, Coding experience in multiple languages  
+
+
+
+
+
