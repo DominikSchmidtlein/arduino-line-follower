@@ -1,6 +1,8 @@
 # Project Charter
  ## Project objectives (Irusha)
  ## Stakeholders (Charlie)
+ * Customer: Prof. A.-M. Cretu 
+ * Group Members: Irusha, Domonik, Charlie
  ## Project scope (Dominik)
  ## Major deliverables (Irusha)
  ## Assumptions (Charlie)
