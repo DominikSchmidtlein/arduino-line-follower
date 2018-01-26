@@ -6,7 +6,7 @@
 #define RIGHT_M_FWD 6 
 #define RIGHT_M_RVS 5 
 
-#define P100 180
+#define P100 160
 #define P50 127
 #define P0 0
 
@@ -46,13 +46,13 @@ void loop() {
   right_col = read_ir(right_ir);
 
   if (left_col == WHITE && right_col == WHITE) {
-    motor(FWD);
-  } else if (left_col == BLACK && right_col == WHITE) {
     motor(LFT);
+  } else if (left_col == BLACK && right_col == WHITE) {
+    motor(FWD);
   } else if (left_col == WHITE && right_col == BLACK) {
     motor(RHT);
   } else {
-    motor(STP);
+    motor(RHT);
   }
   delay(50);
 }
@@ -75,17 +75,17 @@ void motor(Dir dir) {
       break;
     case LFT:
       analogWrite(LEFT_M_FWD, P0);
-      analogWrite(LEFT_M_RVS, P100);
+      analogWrite(LEFT_M_RVS, P50);
 
-      analogWrite(RIGHT_M_FWD, P100);
+      analogWrite(RIGHT_M_FWD, P50);
       analogWrite(RIGHT_M_RVS, P0);
       break;
     case RHT:
-      analogWrite(LEFT_M_FWD, P100);
+      analogWrite(LEFT_M_FWD, P50);
       analogWrite(LEFT_M_RVS, P0);
 
       analogWrite(RIGHT_M_FWD, P0);
-      analogWrite(RIGHT_M_RVS, P100);
+      analogWrite(RIGHT_M_RVS, P50);
       break;
      case STP:
      default:
