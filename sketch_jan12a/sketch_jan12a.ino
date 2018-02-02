@@ -1,12 +1,14 @@
+#define MOTOR_L_PWM 10 // Motor B PWM Speed
+#define MOTOR_L_DIR 9 // Motor B Direction
+#define MOTOR_R_PWM 6 // Motor B PWM Speed
+#define MOTOR_R_DIR 5 // Motor B Direction
+
+#define DIR_DELAY 1000
+
 #define LEFT_IR A0
 #define RIGHT_IR A1
 
-#define LEFT_M_FWD 9
-#define LEFT_M_RVS 10
-#define RIGHT_M_FWD 6 
-#define RIGHT_M_RVS 5 
-
-#define P100 160
+#define P100 175
 #define P50 127
 #define P0 0
 
@@ -23,12 +25,11 @@ Color right_col;
 
 
 void setup() {
-  //Setup Channel A
-//  pinMode(RIGHT_M_RVS, OUTPUT); //Initiates Motor Channel A pin
-//  pinMode(RIGHT_M_FWD, OUTPUT); //Initiates Brake Channel A pin
-//
-//  pinMode(LEFT_M_FWD, OUTPUT); //Initiates Motor Channel A pin
-//  pinMode(LEFT_M_RVS, OUTPUT);
+  pinMode( MOTOR_L_DIR, OUTPUT );
+  pinMode( MOTOR_L_PWM, OUTPUT );
+  pinMode( MOTOR_R_DIR, OUTPUT );
+  pinMode( MOTOR_R_PWM, OUTPUT );
+
   Serial.begin(9600);
 }
 
@@ -58,44 +59,47 @@ void loop() {
 }
 
 void motor(Dir dir) {
+ quick_stop();
   switch(dir) {
     case FWD:
-      analogWrite(LEFT_M_FWD, P100);
-      analogWrite(LEFT_M_RVS, P0);
-      
-      analogWrite(RIGHT_M_FWD, P100);
-      analogWrite(RIGHT_M_RVS, P0);
+      // set the motor speed and direction
+      digitalWrite( MOTOR_L_DIR, HIGH ); // direction = forward
+      analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
+      digitalWrite( MOTOR_R_DIR, HIGH ); // direction = forward
+      analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
       break;
     case RVS:
-      analogWrite(LEFT_M_FWD, P0);
-      analogWrite(LEFT_M_RVS, P100);
-      
-      analogWrite(RIGHT_M_FWD, P0);
-      analogWrite(RIGHT_M_RVS, P100);
+      // set the motor speed and direction
+      digitalWrite( MOTOR_L_DIR, LOW ); // direction = forward
+      analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
+      digitalWrite( MOTOR_R_DIR, LOW ); // direction = forward
+      analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
       break;
     case LFT:
-      analogWrite(LEFT_M_FWD, P0);
-      analogWrite(LEFT_M_RVS, P50);
-
-      analogWrite(RIGHT_M_FWD, P50);
-      analogWrite(RIGHT_M_RVS, P0);
+      // set the motor speed and direction
+      digitalWrite( MOTOR_L_DIR, LOW ); // direction = forward
+      analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
+      digitalWrite( MOTOR_R_DIR, HIGH ); // direction = forward
+      analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
       break;
     case RHT:
-      analogWrite(LEFT_M_FWD, P50);
-      analogWrite(LEFT_M_RVS, P0);
-
-      analogWrite(RIGHT_M_FWD, P0);
-      analogWrite(RIGHT_M_RVS, P50);
+      // set the motor speed and direction
+      digitalWrite( MOTOR_L_DIR, HIGH ); // direction = forward
+      analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
+      digitalWrite( MOTOR_R_DIR, LOW ); // direction = forward
+      analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
       break;
      case STP:
      default:
-      analogWrite(LEFT_M_FWD, P0);
-      analogWrite(LEFT_M_RVS, P0);
-      
-      analogWrite(RIGHT_M_FWD, P0);
-      analogWrite(RIGHT_M_RVS, P0);
       break;
   }
+}
+
+void quick_stop() {
+  digitalWrite( MOTOR_L_DIR, LOW );
+  digitalWrite( MOTOR_L_PWM, LOW );
+  digitalWrite( MOTOR_R_DIR, LOW );
+  digitalWrite( MOTOR_R_PWM, LOW );
 }
 
 Color read_ir(int reading) {
