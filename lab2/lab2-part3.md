@@ -23,9 +23,15 @@ The objective of the project is to create a robotic platform that can be used wi
 maze construction, design, etc.
 
 ## Major deliverables (Irusha)
-
+* 
 ## Assumptions (Charlie)
- ## Constraints (Dominik)
- ## Risk factors (Irusha)
- ## Dependencies with other projects (Everyone)
- ## Acceptance criteria (Everyone)
+
+## Constraints (Dominik)
+* robot must be autonomous
+* robot must move
+* robot cannot be controlled remotely
+## Risk factors (Irusha)
+
+## Dependencies with other projects (Everyone)
+
+## Acceptance criteria (Everyone)
