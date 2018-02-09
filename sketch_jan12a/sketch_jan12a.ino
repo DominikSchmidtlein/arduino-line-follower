@@ -14,6 +14,8 @@
 
 #define IR_THRESHOLD 300
 
+#define TANK_TURN false
+
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 typedef enum { WHITE, BLACK } Color;
 
@@ -35,7 +37,7 @@ void setup() {
 
 void loop() {
 
-  motor(STP);
+  motor(STP, TANK_TURN);
   left_ir = analogRead(LEFT_IR);
   right_ir = analogRead(RIGHT_IR);
 
@@ -47,20 +49,20 @@ void loop() {
   right_col = read_ir(right_ir);
 
   if (left_col == WHITE && right_col == WHITE) {
-    motor(FWD);
+    motor(FWD, TANK_TURN);
   } else if (left_col == BLACK && right_col == WHITE) {
-    motor(LFT);
+    motor(LFT, TANK_TURN);
   } else if (left_col == WHITE && right_col == BLACK) {
-    motor(RHT);
+    motor(RHT, TANK_TURN);
   } else {
-    motor(RHT);
+    motor(STP, TANK_TURN);
   }
   delay(40);
   quick_stop();
   delay(80);
 }
 
-void motor(Dir dir) {
+void motor(Dir dir, boolean tankTurn) {
   switch(dir) {
     case FWD:
       // set the motor speed and direction
@@ -78,8 +80,10 @@ void motor(Dir dir) {
       break;
     case LFT:
       // set the motor speed and direction
-      digitalWrite( MOTOR_L_DIR, LOW ); // direction = forward
-      analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
+      if (tankTurn) {
+        digitalWrite( MOTOR_L_DIR, LOW ); // direction = forward
+        analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
+      }
       digitalWrite( MOTOR_R_DIR, HIGH ); // direction = forward
       analogWrite( MOTOR_R_PWM, 255-P100 ); // PWM speed = fast
       break;
@@ -87,8 +91,10 @@ void motor(Dir dir) {
       // set the motor speed and direction
       digitalWrite( MOTOR_L_DIR, HIGH ); // direction = forward
       analogWrite( MOTOR_L_PWM, 255-P100 ); // PWM speed = fast
-      digitalWrite( MOTOR_R_DIR, LOW ); // direction = forward
-      analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
+      if (tankTurn) {
+        digitalWrite( MOTOR_R_DIR, LOW ); // direction = forward
+        analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
+      }
       break;
      case STP:
      default:
