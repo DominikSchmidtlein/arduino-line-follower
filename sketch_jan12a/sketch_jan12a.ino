@@ -1,23 +1,24 @@
+// PINS
 #define MOTOR_L_PWM 10 // Motor B PWM Speed
 #define MOTOR_L_DIR 9 // Motor B Direction
 #define MOTOR_R_PWM 6 // Motor B PWM Speed
 #define MOTOR_R_DIR 5 // Motor B Direction
-
-#define DIR_DELAY 1000
-
 #define LEFT_IR A0
 #define RIGHT_IR A1
 
-#define P100 250
-#define P50 127
-#define P0 0
+// POWER LEVELS
 #define PTURN 180
 #define PSTRAIGHT 250
 
+// POWER MULTIPIERS
+#define LEFT_TURN 1
+#define RIGHT_TURN 1.2
+#define LEFT_STRAIGHT 1
+#define RIGHT_STRAIGHT 1
+
+
 #define IR_THRESHOLD 300
-
 #define DEBOUNCE_COUNT 10
-
 #define TANK_TURN true
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
@@ -71,7 +72,7 @@ void loop() {
 
 Dir navigate(Color left, Color right) {
   if (left == WHITE && right == WHITE) {
-    return RHT;
+    return LFT;
   } else if (left_col == BLACK && right_col == WHITE) {
     return FWD;
   } else if (left_col == WHITE && right_col == BLACK) {
@@ -89,30 +90,30 @@ void motor(Dir dir, boolean tankTurn) {
   switch(dir) {
     case FWD:
       digitalWrite(MOTOR_L_DIR, HIGH); // forward
-      analogWrite(MOTOR_L_PWM, 255-PSTRAIGHT); // speed
+      analogWrite(MOTOR_L_PWM, (255-PSTRAIGHT) * LEFT_STRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, HIGH); // forward
-      analogWrite(MOTOR_R_PWM, 255-PSTRAIGHT); // speed
+      analogWrite(MOTOR_R_PWM, (255-PSTRAIGHT) * RIGHT_STRAIGHT); // speed
       break;
     case RVS:
       digitalWrite(MOTOR_L_DIR, LOW); // backward
-      analogWrite(MOTOR_L_PWM, PSTRAIGHT); // speed
+      analogWrite(MOTOR_L_PWM, PSTRAIGHT * LEFT_STRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, LOW); // backward
-      analogWrite(MOTOR_R_PWM, PSTRAIGHT); // speed
+      analogWrite(MOTOR_R_PWM, PSTRAIGHT * RIGHT_STRAIGHT); // speed
       break;
     case LFT:
       if (tankTurn) {
         digitalWrite(MOTOR_L_DIR, LOW);
-        analogWrite(MOTOR_L_PWM, PTURN);
+        analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN);
       }
       digitalWrite(MOTOR_R_DIR, HIGH);
-      analogWrite(MOTOR_R_PWM, 255-PTURN);
+      analogWrite(MOTOR_R_PWM, (255-PTURN) * RIGHT_TURN);
       break;
     case RHT:
       digitalWrite(MOTOR_L_DIR, HIGH);
-      analogWrite(MOTOR_L_PWM, 255-PTURN);
+      analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_TURN);
       if (tankTurn) {
         digitalWrite(MOTOR_R_DIR, LOW);
-        analogWrite(MOTOR_R_PWM, PTURN);
+        analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN);
       }
       break;
     case STP:
