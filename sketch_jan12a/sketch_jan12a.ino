@@ -11,12 +11,14 @@
 #define P100 250
 #define P50 127
 #define P0 0
+#define PTURN 180
+#define PSTRAIGHT 250
 
 #define IR_THRESHOLD 300
 
 #define DEBOUNCE_COUNT 10
 
-#define TANK_TURN false
+#define TANK_TURN true
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 typedef enum { WHITE, BLACK } Color;
@@ -87,30 +89,30 @@ void motor(Dir dir, boolean tankTurn) {
   switch(dir) {
     case FWD:
       digitalWrite(MOTOR_L_DIR, HIGH); // forward
-      analogWrite(MOTOR_L_PWM, 255-P100); // speed
+      analogWrite(MOTOR_L_PWM, 255-PSTRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, HIGH); // forward
-      analogWrite(MOTOR_R_PWM, 255-P100); // speed
+      analogWrite(MOTOR_R_PWM, 255-PSTRAIGHT); // speed
       break;
     case RVS:
       digitalWrite(MOTOR_L_DIR, LOW); // backward
-      analogWrite(MOTOR_L_PWM, P100); // speed
+      analogWrite(MOTOR_L_PWM, PSTRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, LOW); // backward
-      analogWrite(MOTOR_R_PWM, P100); // speed
+      analogWrite(MOTOR_R_PWM, PSTRAIGHT); // speed
       break;
     case LFT:
       if (tankTurn) {
         digitalWrite(MOTOR_L_DIR, LOW);
-        analogWrite(MOTOR_L_PWM, P100);
+        analogWrite(MOTOR_L_PWM, PTURN);
       }
       digitalWrite(MOTOR_R_DIR, HIGH);
-      analogWrite(MOTOR_R_PWM, 255-P100);
+      analogWrite(MOTOR_R_PWM, 255-PTURN);
       break;
     case RHT:
       digitalWrite(MOTOR_L_DIR, HIGH);
-      analogWrite(MOTOR_L_PWM, 255-P100);
+      analogWrite(MOTOR_L_PWM, 255-PTURN);
       if (tankTurn) {
         digitalWrite(MOTOR_R_DIR, LOW);
-        analogWrite(MOTOR_R_PWM, P100);
+        analogWrite(MOTOR_R_PWM, PTURN);
       }
       break;
     case STP:
