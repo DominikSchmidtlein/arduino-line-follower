@@ -18,7 +18,7 @@
 
 
 #define IR_THRESHOLD 300
-#define DEBOUNCE_COUNT 10
+#define DEBOUNCE_COUNT 25
 #define TANK_TURN true
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
@@ -47,7 +47,7 @@ void setup() {
 
 void loop() {
   motor(STP);
-
+  delay(5);
   left_ir = 0;
   right_ir = 0;
   for (i = 0; i < DEBOUNCE_COUNT; i++) {
@@ -64,10 +64,7 @@ void loop() {
   dir = navigate(left_col, right_col);
 
   motor(dir);
-  
-  delay(40);
-  quick_stop();
-  delay(80);
+  delay(10);
 }
 
 Dir navigate(Color left, Color right) {
