@@ -7,7 +7,7 @@
 #define RIGHT_IR A1
 
 // POWER LEVELS
-#define PTURN 180
+#define PTURN 225
 #define PSTRAIGHT 250
 
 // POWER MULTIPIERS
