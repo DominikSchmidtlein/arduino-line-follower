@@ -18,7 +18,7 @@
 
 
 #define IR_THRESHOLD 300
-#define DEBOUNCE_COUNT 25
+#define DEBOUNCE_COUNT 15
 // one is full tank turn, 0 is no tank turn
 #define TANK_TURN 0.9
 
