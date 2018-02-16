@@ -11,15 +11,15 @@
 #define PSTRAIGHT 250
 
 // POWER MULTIPIERS
-#define LEFT_TURN 1
-#define RIGHT_TURN 1.2
+#define LEFT_TURN 0.9
+#define RIGHT_TURN 1
 #define LEFT_STRAIGHT 1
 #define RIGHT_STRAIGHT 1
 
 
 #define IR_THRESHOLD 300
 #define DEBOUNCE_COUNT 25
-#define TANK_TURN true
+#define TANK_TURN false
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 typedef enum { WHITE, BLACK } Color;
