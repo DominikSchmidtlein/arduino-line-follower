@@ -23,8 +23,11 @@ int left_ir;
 int right_ir;
 
 Color left_col;
+Color left_prev_col;
 Color right_col;
+Color right_prev_col;
 
+bool startup = true;
 
 void setup() {
   pinMode( MOTOR_L_DIR, OUTPUT );
@@ -34,6 +37,13 @@ void setup() {
 
   Serial.begin(9600);
 }
+
+
+
+
+
+
+
 
 void loop() {
 
@@ -48,14 +58,16 @@ void loop() {
   left_col = read_ir(left_ir);
   right_col = read_ir(right_ir);
 
+
+
   if (left_col == WHITE && right_col == WHITE) {
-    motor(FWD, TANK_TURN);
-  } else if (left_col == BLACK && right_col == WHITE) {
     motor(LFT, TANK_TURN);
+  } else if (left_col == BLACK && right_col == WHITE) {
+    motor(FWD, TANK_TURN);
   } else if (left_col == WHITE && right_col == BLACK) {
     motor(RHT, TANK_TURN);
   } else {
-    motor(STP, TANK_TURN);
+    motor(RHT, TANK_TURN);
   }
   delay(40);
   quick_stop();
@@ -97,6 +109,10 @@ void motor(Dir dir, boolean tankTurn) {
       }
       break;
      case STP:
+        
+      
+
+     
      default:
       break;
   }
