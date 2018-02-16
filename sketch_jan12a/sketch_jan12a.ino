@@ -19,7 +19,8 @@
 
 #define IR_THRESHOLD 300
 #define DEBOUNCE_COUNT 25
-#define TANK_TURN true
+// one is full tank turn, 0 is no tank turn
+#define TANK_TURN 0.9
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 typedef enum { WHITE, BLACK } Color;
@@ -80,10 +81,6 @@ Dir navigate(Color left, Color right) {
 }
 
 void motor(Dir dir) {
-  motor(dir, TANK_TURN);
-}
-
-void motor(Dir dir, boolean tankTurn) {
   switch(dir) {
     case FWD:
       digitalWrite(MOTOR_L_DIR, HIGH); // forward
@@ -98,20 +95,16 @@ void motor(Dir dir, boolean tankTurn) {
       analogWrite(MOTOR_R_PWM, PSTRAIGHT * RIGHT_STRAIGHT); // speed
       break;
     case LFT:
-      if (tankTurn) {
-        digitalWrite(MOTOR_L_DIR, LOW);
-        analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN);
-      }
+      digitalWrite(MOTOR_L_DIR, LOW);
+      analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN * TANK_TURN);
       digitalWrite(MOTOR_R_DIR, HIGH);
       analogWrite(MOTOR_R_PWM, (255-PTURN) * RIGHT_TURN);
       break;
     case RHT:
       digitalWrite(MOTOR_L_DIR, HIGH);
       analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_TURN);
-      if (tankTurn) {
-        digitalWrite(MOTOR_R_DIR, LOW);
-        analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN);
-      }
+      digitalWrite(MOTOR_R_DIR, LOW);
+      analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN * TANK_TURN);
       break;
     case STP:
       quick_stop();
