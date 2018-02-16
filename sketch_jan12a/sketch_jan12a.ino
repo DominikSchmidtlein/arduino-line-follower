@@ -7,8 +7,8 @@
 #define RIGHT_IR A1
 
 // POWER LEVELS
-#define PTURN 225
-#define PSTRAIGHT 250
+#define PTURN 255
+#define PSTRAIGHT 255
 
 // POWER MULTIPIERS
 #define LEFT_TURN 0.9
@@ -19,7 +19,7 @@
 
 #define IR_THRESHOLD 300
 #define DEBOUNCE_COUNT 25
-#define TANK_TURN false
+#define TANK_TURN true
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 typedef enum { WHITE, BLACK } Color;
@@ -47,7 +47,7 @@ void setup() {
 
 void loop() {
   motor(STP);
-  delay(5);
+  
   left_ir = 0;
   right_ir = 0;
   for (i = 0; i < DEBOUNCE_COUNT; i++) {
