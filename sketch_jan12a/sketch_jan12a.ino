@@ -14,6 +14,8 @@
 
 #define IR_THRESHOLD 300
 
+#define DEBOUNCE_COUNT 10
+
 #define TANK_TURN false
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
@@ -29,6 +31,8 @@ Color left_prev_col;
 Color right_col;
 Color right_prev_col;
 
+int i = 0;
+
 void setup() {
   pinMode( MOTOR_L_DIR, OUTPUT );
   pinMode( MOTOR_L_PWM, OUTPUT );
@@ -40,9 +44,17 @@ void setup() {
 
 void loop() {
   motor(STP);
-  left_ir = analogRead(LEFT_IR);
-  right_ir = analogRead(RIGHT_IR);
-  
+
+  left_ir = 0;
+  right_ir = 0;
+  for (i = 0; i < DEBOUNCE_COUNT; i++) {
+    left_ir += analogRead(LEFT_IR);
+    right_ir += analogRead(RIGHT_IR);
+    delay(1);
+  }
+  left_ir /= DEBOUNCE_COUNT;
+  right_ir /= DEBOUNCE_COUNT;
+
   left_col = read_ir(left_ir);
   right_col = read_ir(right_ir);
 
@@ -57,7 +69,7 @@ void loop() {
 
 Dir navigate(Color left, Color right) {
   if (left == WHITE && right == WHITE) {
-    return LFT;
+    return RHT;
   } else if (left_col == BLACK && right_col == WHITE) {
     return FWD;
   } else if (left_col == WHITE && right_col == BLACK) {
@@ -101,8 +113,9 @@ void motor(Dir dir, boolean tankTurn) {
         analogWrite(MOTOR_R_PWM, P100);
       }
       break;
-     case STP:
-     default:
+    case STP:
+      quick_stop();
+    default:
       break;
   }
 }
