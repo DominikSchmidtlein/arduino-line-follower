@@ -22,12 +22,12 @@ typedef enum { WHITE, BLACK } Color;
 int left_ir;
 int right_ir;
 
+Dir dir;
+
 Color left_col;
 Color left_prev_col;
 Color right_col;
 Color right_prev_col;
-
-bool startup = true;
 
 void setup() {
   pinMode( MOTOR_L_DIR, OUTPUT );
@@ -38,81 +38,70 @@ void setup() {
   Serial.begin(9600);
 }
 
-
-
-
-
-
-
-
 void loop() {
-
-  motor(STP, TANK_TURN);
+  motor(STP);
   left_ir = analogRead(LEFT_IR);
   right_ir = analogRead(RIGHT_IR);
-
-  Serial.println(left_ir);
-//  Serial.print(", ");
-//  Serial.println(right_ir);
-
+  
   left_col = read_ir(left_ir);
   right_col = read_ir(right_ir);
 
+  dir = navigate(left_col, right_col);
 
-
-  if (left_col == WHITE && right_col == WHITE) {
-    motor(LFT, TANK_TURN);
-  } else if (left_col == BLACK && right_col == WHITE) {
-    motor(FWD, TANK_TURN);
-  } else if (left_col == WHITE && right_col == BLACK) {
-    motor(RHT, TANK_TURN);
-  } else {
-    motor(RHT, TANK_TURN);
-  }
+  motor(dir);
+  
   delay(40);
   quick_stop();
   delay(80);
 }
 
+Dir navigate(Color left, Color right) {
+  if (left == WHITE && right == WHITE) {
+    return LFT;
+  } else if (left_col == BLACK && right_col == WHITE) {
+    return FWD;
+  } else if (left_col == WHITE && right_col == BLACK) {
+    return RHT;
+  } else {
+    return RHT;
+  }
+}
+
+void motor(Dir dir) {
+  motor(dir, TANK_TURN);
+}
+
 void motor(Dir dir, boolean tankTurn) {
   switch(dir) {
     case FWD:
-      // set the motor speed and direction
-      digitalWrite( MOTOR_L_DIR, HIGH ); // direction = forward
-      analogWrite( MOTOR_L_PWM, 255-P100 ); // PWM speed = fast
-      digitalWrite( MOTOR_R_DIR, HIGH ); // direction = forward
-      analogWrite( MOTOR_R_PWM, 255-P100 ); // PWM speed = fast
+      digitalWrite(MOTOR_L_DIR, HIGH); // forward
+      analogWrite(MOTOR_L_PWM, 255-P100); // speed
+      digitalWrite(MOTOR_R_DIR, HIGH); // forward
+      analogWrite(MOTOR_R_PWM, 255-P100); // speed
       break;
     case RVS:
-      // set the motor speed and direction
-      digitalWrite( MOTOR_L_DIR, LOW ); // direction = forward
-      analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
-      digitalWrite( MOTOR_R_DIR, LOW ); // direction = forward
-      analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
+      digitalWrite(MOTOR_L_DIR, LOW); // backward
+      analogWrite(MOTOR_L_PWM, P100); // speed
+      digitalWrite(MOTOR_R_DIR, LOW); // backward
+      analogWrite(MOTOR_R_PWM, P100); // speed
       break;
     case LFT:
-      // set the motor speed and direction
       if (tankTurn) {
-        digitalWrite( MOTOR_L_DIR, LOW ); // direction = forward
-        analogWrite( MOTOR_L_PWM, P100 ); // PWM speed = fast
+        digitalWrite(MOTOR_L_DIR, LOW);
+        analogWrite(MOTOR_L_PWM, P100);
       }
-      digitalWrite( MOTOR_R_DIR, HIGH ); // direction = forward
-      analogWrite( MOTOR_R_PWM, 255-P100 ); // PWM speed = fast
+      digitalWrite(MOTOR_R_DIR, HIGH);
+      analogWrite(MOTOR_R_PWM, 255-P100);
       break;
     case RHT:
-      // set the motor speed and direction
-      digitalWrite( MOTOR_L_DIR, HIGH ); // direction = forward
-      analogWrite( MOTOR_L_PWM, 255-P100 ); // PWM speed = fast
+      digitalWrite(MOTOR_L_DIR, HIGH);
+      analogWrite(MOTOR_L_PWM, 255-P100);
       if (tankTurn) {
-        digitalWrite( MOTOR_R_DIR, LOW ); // direction = forward
-        analogWrite( MOTOR_R_PWM, P100 ); // PWM speed = fast
+        digitalWrite(MOTOR_R_DIR, LOW);
+        analogWrite(MOTOR_R_PWM, P100);
       }
       break;
      case STP:
-        
-      
-
-     
      default:
       break;
   }
