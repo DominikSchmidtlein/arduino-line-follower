@@ -16,6 +16,13 @@
 #define LEFT_STRAIGHT 1
 #define RIGHT_STRAIGHT 1
 
+// DIRECTION SPECIFIC DELAYS
+#define ALL_DELAY 5
+#define FWD_DELAY 2
+#define RVS_DELAY 2
+#define LFT_DELAY 5
+#define RHT_DELAY 5
+
 
 #define IR_THRESHOLD 300
 #define DEBOUNCE_COUNT 15
@@ -65,7 +72,7 @@ void loop() {
   dir = navigate(left_col, right_col);
 
   motor(dir);
-  delay(10);
+  delay(ALL_DELAY);
 }
 
 Dir navigate(Color left, Color right) {
@@ -87,24 +94,28 @@ void motor(Dir dir) {
       analogWrite(MOTOR_L_PWM, (255-PSTRAIGHT) * LEFT_STRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, HIGH); // forward
       analogWrite(MOTOR_R_PWM, (255-PSTRAIGHT) * RIGHT_STRAIGHT); // speed
+      delay(FWD_DELAY);
       break;
     case RVS:
       digitalWrite(MOTOR_L_DIR, LOW); // backward
       analogWrite(MOTOR_L_PWM, PSTRAIGHT * LEFT_STRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, LOW); // backward
       analogWrite(MOTOR_R_PWM, PSTRAIGHT * RIGHT_STRAIGHT); // speed
+      delay(RVS_DELAY);
       break;
     case LFT:
       digitalWrite(MOTOR_L_DIR, LOW);
       analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN * TANK_TURN);
       digitalWrite(MOTOR_R_DIR, HIGH);
       analogWrite(MOTOR_R_PWM, (255-PTURN) * RIGHT_TURN);
+      delay(LFT_DELAY);
       break;
     case RHT:
       digitalWrite(MOTOR_L_DIR, HIGH);
       analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_TURN);
       digitalWrite(MOTOR_R_DIR, LOW);
       analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN * TANK_TURN);
+      delay(RHT_DELAY);
       break;
     case STP:
       quick_stop();
@@ -125,6 +136,21 @@ Color read_ir(int reading) {
     return BLACK;
   } else {
     return WHITE;
+  }
+}
+
+void printDir(Dir dir) {
+  switch(dir) {
+    case FWD:
+      Serial.println("FWD");
+    case RVS:
+      Serial.println("RVS");
+    case STP:
+      Serial.println("STP");
+    case LFT:
+      Serial.println("LFT");
+    case RHT:
+      Serial.println("RHT");
   }
 }
 
