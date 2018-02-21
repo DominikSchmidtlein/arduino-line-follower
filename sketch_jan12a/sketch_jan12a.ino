@@ -20,14 +20,15 @@
 #define ALL_DELAY 5
 #define FWD_DELAY 2
 #define RVS_DELAY 2
-#define LFT_DELAY 5
-#define RHT_DELAY 5
+#define LFT_DELAY 3
+#define RHT_DELAY 3
 
 
 #define IR_THRESHOLD 300
 #define DEBOUNCE_COUNT 15
 // one is full tank turn, 0 is no tank turn
-#define TANK_TURN 0.9
+#define TANK_TURN_LEFT 1
+#define TANK_TURN_RIGHT 0.9
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 typedef enum { WHITE, BLACK } Color;
@@ -107,7 +108,7 @@ void motor(Dir dir) {
       break;
     case LFT:
       digitalWrite(MOTOR_L_DIR, LOW);
-      analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN * TANK_TURN);
+      analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN * TANK_TURN_LEFT);
       digitalWrite(MOTOR_R_DIR, HIGH);
       analogWrite(MOTOR_R_PWM, (255-PTURN) * RIGHT_TURN);
       delay(LFT_DELAY);
@@ -116,7 +117,7 @@ void motor(Dir dir) {
       digitalWrite(MOTOR_L_DIR, HIGH);
       analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_TURN);
       digitalWrite(MOTOR_R_DIR, LOW);
-      analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN * TANK_TURN);
+      analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN * TANK_TURN_RIGHT);
       delay(RHT_DELAY);
       break;
     case STP:
