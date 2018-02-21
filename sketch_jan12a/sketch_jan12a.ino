@@ -51,9 +51,11 @@ void setup() {
   pinMode( MOTOR_R_PWM, OUTPUT );
 
   Serial.begin(9600);
+  Serial.println("Hello!");
 }
 
 void loop() {
+  Serial.println("Start of loop!");
   motor(STP);
   
   left_ir = 0;
@@ -70,7 +72,7 @@ void loop() {
   right_col = read_ir(right_ir);
 
   dir = navigate(left_col, right_col);
-
+  printDir(dir);
   motor(dir);
   delay(ALL_DELAY);
 }
@@ -143,14 +145,19 @@ void printDir(Dir dir) {
   switch(dir) {
     case FWD:
       Serial.println("FWD");
+      break;
     case RVS:
       Serial.println("RVS");
+      break;
     case STP:
       Serial.println("STP");
+      break;
     case LFT:
       Serial.println("LFT");
+      break;
     case RHT:
       Serial.println("RHT");
+      break;
   }
 }
 
