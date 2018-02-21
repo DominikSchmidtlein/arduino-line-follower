@@ -11,17 +11,17 @@
 #define PSTRAIGHT 255
 
 // POWER MULTIPIERS
-#define LEFT_TURN 0.9
-#define RIGHT_TURN 1
+#define LEFT_TURN 1
+#define RIGHT_TURN 0.9
 #define LEFT_STRAIGHT 1
 #define RIGHT_STRAIGHT 1
 
 // DIRECTION SPECIFIC DELAYS
 #define ALL_DELAY 5
-#define FWD_DELAY 2
-#define RVS_DELAY 2
+#define FWD_DELAY 0.9
+#define RVS_DELAY 4
 #define LFT_DELAY 3
-#define RHT_DELAY 3
+#define RHT_DELAY 7
 
 
 #define IR_THRESHOLD 300
