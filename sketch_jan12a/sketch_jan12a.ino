@@ -10,7 +10,8 @@
 #define PTURN 255
 #define PSTRAIGHT 255
 
-// POWER MULTIPIERS
+// POWER 
+
 #define LEFT_TURN 1
 #define RIGHT_TURN 0.9
 #define LEFT_STRAIGHT 1
@@ -20,12 +21,12 @@
 #define ALL_DELAY 5
 #define FWD_DELAY 0.9
 #define RVS_DELAY 4
-#define LFT_DELAY 3
-#define RHT_DELAY 7
+#define LFT_DELAY 2
+#define RHT_DELAY 6
 
 
-#define IR_THRESHOLD 300
-#define DEBOUNCE_COUNT 15
+#define IR_THRESHOLD 500
+#define DEBOUNCE_COUNT 10
 // one is full tank turn, 0 is no tank turn
 #define TANK_TURN_LEFT 1
 #define TANK_TURN_RIGHT 0.9
@@ -72,7 +73,7 @@ void loop() {
   left_col = read_ir(left_ir);
   right_col = read_ir(right_ir);
 
-  dir = navigate(left_col, right_col);
+  dir = navigateLeft(left_col, right_col);
   printDir(dir);
   motor(dir);
   delay(ALL_DELAY);
@@ -81,12 +82,25 @@ void loop() {
 Dir navigate(Color left, Color right) {
   if (left == WHITE && right == WHITE) {
     return LFT;
-  } else if (left_col == BLACK && right_col == WHITE) {
+  } else if (left == BLACK && right == WHITE) {
     return FWD;
-  } else if (left_col == WHITE && right_col == BLACK) {
+  } else if (left == WHITE && right == BLACK) {
     return RHT;
   } else {
     return RHT;
+  }
+}
+
+
+Dir navigateLeft(Color left, Color right) {
+  if (left == WHITE && right == WHITE) {
+    return RHT;
+//  } else if (left == BLACK && right == WHITE) {
+//    return LFT;
+//  } else if (left == WHITE && right == BLACK) {
+//    return LFT;
+  } else {
+    return LFT;
   }
 }
 
