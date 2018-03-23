@@ -4,10 +4,12 @@
 #define MOTOR_R_PWM 6 // Motor B PWM Speed
 #define MOTOR_R_DIR 5 // Motor B Direction
 
-#define TRIG_PIN1 11
-#define TRIG_PIN2 13
-#define ECHO_PIN1 12
-#define ECHO_PIN2 2
+#define TRIG_PIN_F 11
+#define TRIG_PIN_R 3
+#define TRIG_PIN_L 13
+#define ECHO_PIN_F 12
+#define ECHO_PIN_R 2
+#define ECHO_PIN_L 4
 #define ULTRASONIC_DEBOUNDING 10
 
 // POWER LEVELS
@@ -38,7 +40,7 @@ Dir dir;
 
 long duration;
 int distance1;
-int distance2;
+float dLeft, dFront, dRight;
 
 int i = 0;
 
@@ -48,27 +50,47 @@ void setup() {
   pinMode( MOTOR_R_DIR, OUTPUT );
   pinMode( MOTOR_R_PWM, OUTPUT );
 
-  pinMode(TRIG_PIN1, OUTPUT); // Sets the trigPin as an Output
-  pinMode(TRIG_PIN2, OUTPUT); // Sets the trigPin as an Output
-  pinMode(ECHO_PIN1, INPUT); // Sets the echoPin as an Input
-  pinMode(ECHO_PIN2, INPUT); // Sets the echoPin as an Input
+  pinMode(TRIG_PIN_F, OUTPUT); // Sets the trigPin as an Output
+  pinMode(TRIG_PIN_L, OUTPUT); // Sets the trigPin as an Output
+  pinMode(TRIG_PIN_R, OUTPUT); // Sets the trigPin as an Output
+  pinMode(ECHO_PIN_F, INPUT); // Sets the echoPin as an Input
+  pinMode(ECHO_PIN_L, INPUT); // Sets the echoPin as an Input
+  pinMode(ECHO_PIN_R, INPUT); // Sets the echoPin as an Input
 
   Serial.begin(9600);
   dir = FWD;
 }
 
 void loop() {
+//  dFront = getDistance();
+//  if (dFront > 4) { // distance in front is high
+//    dLeft = getDistance();
+//    dRight = getDistance();
+//    if (dLeft > dRight) {
+//      motor(LFT);
+//    } else {
+//      motor(RHT);
+//    }
+//  } else { // distance in front is low
+//    
+//  }
+  dFront = getDistance(TRIG_PIN_F, ECHO_PIN_F);
+  dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
+  dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
 
+
+  Serial.print("Front: ");
+  Serial.print(dFront);
+  Serial.print(" Left: ");
+  Serial.print(dLeft);
+  Serial.print(" Right: ");
+  Serial.println(dRight);
   
-  // Calculating the distance
-  distance1= getDistance(TRIG_PIN1,ECHO_PIN1);
-  distance2= getDistance(TRIG_PIN2,ECHO_PIN2);
 
   // Prints the distance on the Serial Monitor
-  Serial.print("Distance: ");
-  Serial.print(distance1);
-  Serial.print("     ");
-  Serial.println(distance2);
+//  Serial.print("Distance: ");
+//  Serial.print(distance1);
+//  Serial.print("     ");
   
   //motor(STP);
 //  motor(dir);
@@ -77,22 +99,17 @@ void loop() {
 
 
 
-int getDistance(int trigPin, int echoPin) {
-  int duration = 0;
-  for(int i = 0; i < ULTRASONIC_DEBOUNDING; i++) {
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(2);
-    // Sets the trigPin on HIGH state for 10 micro seconds
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-    // Reads the echoPin, returns the sound wave travel time in microseconds
-    duration += pulseIn(echoPin, HIGH);
-  }
-  // Calculating the distance
-  return duration/ULTRASONIC_DEBOUNDING*0.034/2;
-
-  
+float getDistance(int trigPin, int echoPin) {
+  unsigned long duration = 0;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration= pulseIn(echoPin, HIGH);
+  return duration*0.034/2;
   }
 
 void motor(Dir dir) {
