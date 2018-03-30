@@ -27,15 +27,19 @@
 #define STP_DELAY 10
 #define FWD_DELAY 10
 #define RVS_DELAY 4
-#define LFT_DELAY 2
-#define RHT_DELAY 6
+#define LFT_DELAY 400 
+#define RHT_DELAY 350
+
+#define READ_DELAY 5
 
 // one is full tank turn, 0 is no tank turn
 #define TANK_TURN_LEFT 0.85
+#define TANK_TURN_LEFT_DELAY 400 
 #define TANK_TURN_RIGHT 0.85
+#define TANK_TURN_RIGHT_DELAY 350
 
 // DISTANCES
-#define BUFFER_F 10
+#define FRONT_THRESHOLD 10
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 
@@ -66,34 +70,16 @@ void setup() {
 
 void loop() {
   dFront = getDistance(TRIG_PIN_F, ECHO_PIN_F);
-  if (dFront > BUFFER_F) { // distance in front is high
-    motor(FWD);
-//    if (closestSide == LFT) {
-//      if (distanceSide 
-//    } else {
-//      
-//    }
-//    dLeft = getDistance();
-//    dRight = getDistance();
-//    if (dLeft > dRight) {
-//      motor(LFT);
-//    } else {
-//      motor(RHT);
-//    }
+  if (dFront > FRONT_THRESHOLD) { // distance in front is high
+    go(FWD);
   } else { // distance in front is low
-    
+    delay(READ_DELAY);
+    dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
+    dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
+    turn(dLeft > dRight ? LFT : RHT);
   }
-//  dFront = getDistance(TRIG_PIN_F, ECHO_PIN_F);
-//  dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
-//  dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
-
-//  Serial.print(dFront);
-//  Serial.print(" ");
-//  Serial.print(dLeft);
-//  Serial.print(" ");
-//  Serial.println(dRight);
   
-  motor(STP);
+  go(STP);
   delay(STP_DELAY);
 }
 
@@ -113,7 +99,7 @@ float getDistance(int trigPin, int echoPin) {
   return distance > 40 ? 60 : distance;
 }
 
-void motor(Dir dir) {
+void go(Dir dir) {
   switch(dir) {
     case FWD:
       digitalWrite(MOTOR_L_DIR, HIGH); // forward
@@ -149,6 +135,28 @@ void motor(Dir dir) {
       digitalWrite(MOTOR_L_PWM, LOW);
       digitalWrite(MOTOR_R_DIR, LOW);
       digitalWrite(MOTOR_R_PWM, LOW);
+      break;
+  }
+}
+
+
+void turn(Dir dir) {
+  switch(dir) {
+    case LFT:
+      digitalWrite(MOTOR_L_DIR, LOW);
+      analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN * TANK_TURN_LEFT);
+      digitalWrite(MOTOR_R_DIR, HIGH);
+      analogWrite(MOTOR_R_PWM, (255-PTURN) * RIGHT_TURN);
+      delay(TANK_TURN_LEFT_DELAY);
+      break;
+    case RHT:
+      digitalWrite(MOTOR_L_DIR, HIGH);
+      analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_TURN);
+      digitalWrite(MOTOR_R_DIR, LOW);
+      analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN * TANK_TURN_RIGHT);
+      delay(TANK_TURN_RIGHT_DELAY);
+      break;
+    default:
       break;
   }
 }
