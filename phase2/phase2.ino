@@ -78,19 +78,11 @@ void loop() {
   dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
   dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
 
-
-  Serial.print("Front: ");
   Serial.print(dFront);
-  Serial.print(" Left: ");
+  Serial.print(" ");
   Serial.print(dLeft);
-  Serial.print(" Right: ");
+  Serial.print(" ");
   Serial.println(dRight);
-  
-
-  // Prints the distance on the Serial Monitor
-//  Serial.print("Distance: ");
-//  Serial.print(distance1);
-//  Serial.print("     ");
   
   //motor(STP);
 //  motor(dir);
@@ -101,6 +93,7 @@ void loop() {
 
 float getDistance(int trigPin, int echoPin) {
   unsigned long duration = 0;
+  float distance = 0;
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   // Sets the trigPin on HIGH state for 10 micro seconds
@@ -108,9 +101,9 @@ float getDistance(int trigPin, int echoPin) {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  duration= pulseIn(echoPin, HIGH);
-  return duration*0.034/2;
-  }
+  distance = pulseIn(echoPin, HIGH)*0.034/2;
+  return distance > 40 ? 60 : distance;
+}
 
 void motor(Dir dir) {
   switch(dir) {
