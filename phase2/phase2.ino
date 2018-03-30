@@ -17,15 +17,15 @@
 #define PSTRAIGHT 255
 
 // POWER 
-
+#define STRAIGHT 0.9
 #define LEFT_TURN 1
 #define RIGHT_TURN 0.9
-#define LEFT_STRAIGHT 1
+#define LEFT_STRAIGHT 0.9
 #define RIGHT_STRAIGHT 1
 
 // DIRECTION SPECIFIC DELAYS
-#define ALL_DELAY 5
-#define FWD_DELAY 0.9
+#define STP_DELAY 10
+#define FWD_DELAY 10
 #define RVS_DELAY 4
 #define LFT_DELAY 2
 #define RHT_DELAY 6
@@ -33,6 +33,9 @@
 // one is full tank turn, 0 is no tank turn
 #define TANK_TURN_LEFT 0.85
 #define TANK_TURN_RIGHT 0.85
+
+// DISTANCES
+#define BUFFER_F 10
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 
@@ -62,8 +65,14 @@ void setup() {
 }
 
 void loop() {
-//  dFront = getDistance();
-//  if (dFront > 4) { // distance in front is high
+  dFront = getDistance(TRIG_PIN_F, ECHO_PIN_F);
+  if (dFront > BUFFER_F) { // distance in front is high
+    motor(FWD);
+//    if (closestSide == LFT) {
+//      if (distanceSide 
+//    } else {
+//      
+//    }
 //    dLeft = getDistance();
 //    dRight = getDistance();
 //    if (dLeft > dRight) {
@@ -71,22 +80,21 @@ void loop() {
 //    } else {
 //      motor(RHT);
 //    }
-//  } else { // distance in front is low
-//    
-//  }
-  dFront = getDistance(TRIG_PIN_F, ECHO_PIN_F);
-  dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
-  dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
+  } else { // distance in front is low
+    
+  }
+//  dFront = getDistance(TRIG_PIN_F, ECHO_PIN_F);
+//  dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
+//  dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
 
-  Serial.print(dFront);
-  Serial.print(" ");
-  Serial.print(dLeft);
-  Serial.print(" ");
-  Serial.println(dRight);
+//  Serial.print(dFront);
+//  Serial.print(" ");
+//  Serial.print(dLeft);
+//  Serial.print(" ");
+//  Serial.println(dRight);
   
-  //motor(STP);
-//  motor(dir);
-  //delay(ALL_DELAY);
+  motor(STP);
+  delay(STP_DELAY);
 }
 
 
@@ -109,16 +117,16 @@ void motor(Dir dir) {
   switch(dir) {
     case FWD:
       digitalWrite(MOTOR_L_DIR, HIGH); // forward
-      analogWrite(MOTOR_L_PWM, (255-PSTRAIGHT) * LEFT_STRAIGHT); // speed
+      analogWrite(MOTOR_L_PWM, (255-PSTRAIGHT) * LEFT_STRAIGHT * STRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, HIGH); // forward
-      analogWrite(MOTOR_R_PWM, (255-PSTRAIGHT) * RIGHT_STRAIGHT); // speed
+      analogWrite(MOTOR_R_PWM, (255-PSTRAIGHT) * RIGHT_STRAIGHT * STRAIGHT); // speed
       delay(FWD_DELAY);
       break;
     case RVS:
       digitalWrite(MOTOR_L_DIR, LOW); // backward
-      analogWrite(MOTOR_L_PWM, PSTRAIGHT * LEFT_STRAIGHT); // speed
+      analogWrite(MOTOR_L_PWM, PSTRAIGHT * LEFT_STRAIGHT * STRAIGHT); // speed
       digitalWrite(MOTOR_R_DIR, LOW); // backward
-      analogWrite(MOTOR_R_PWM, PSTRAIGHT * RIGHT_STRAIGHT); // speed
+      analogWrite(MOTOR_R_PWM, PSTRAIGHT * RIGHT_STRAIGHT * STRAIGHT); // speed
       delay(RVS_DELAY);
       break;
     case LFT:
