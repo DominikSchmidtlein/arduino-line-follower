@@ -1,3 +1,5 @@
+//#define DEBUG
+
 // PINS
 #define MOTOR_L_PWM 10 // Motor B PWM Speed
 #define MOTOR_L_DIR 9 // Motor B Direction
@@ -20,26 +22,33 @@
 #define STRAIGHT 0.9
 #define LEFT_TURN 1
 #define RIGHT_TURN 0.9
-#define LEFT_STRAIGHT 0.9
+
+
+
+#define LEFT_STRAIGHT 0.8
 #define RIGHT_STRAIGHT 1
+#define LEFT_YIELD 0.6
+#define RIGHT_YIELD 0.6
 
 // DIRECTION SPECIFIC DELAYS
-#define STP_DELAY 10
-#define FWD_DELAY 10
+#define STP_DELAY 30
+#define FWD_DELAY 50
 #define RVS_DELAY 4
-#define LFT_DELAY 400 
-#define RHT_DELAY 350
+#define LFT_DELAY 10
+#define RHT_DELAY 10
 
 #define READ_DELAY 5
 
 // one is full tank turn, 0 is no tank turn
-#define TANK_TURN_LEFT 0.85
-#define TANK_TURN_LEFT_DELAY 400 
-#define TANK_TURN_RIGHT 0.85
-#define TANK_TURN_RIGHT_DELAY 350
+#define TANK_TURN_LEFT 1.00
+#define TANK_TURN_LEFT_DELAY 370 
+#define TANK_TURN_RIGHT 1.00
+#define TANK_TURN_RIGHT_DELAY 320
 
 // DISTANCES
-#define FRONT_THRESHOLD 10
+#define THRESHOLD_BUFFER 3
+#define FRONT_THRESHOLD 7
+#define SIDE_THRESHOLD_MIN 8
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
 
@@ -69,11 +78,52 @@ void setup() {
 }
 
 void loop() {
+  Dir closestWall;
   dFront = getDistance(TRIG_PIN_F, ECHO_PIN_F);
+#ifdef DEBUG
+  Serial.print("Front: ");
+  Serial.print(dFront);
+#endif
   if (dFront > FRONT_THRESHOLD) { // distance in front is high
-    go(FWD);
+    
+    dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
+    dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
+    closestWall = (dLeft > dRight ? RHT : LFT);
+#ifdef DEBUG
+    Serial.print(" Left: "); 
+    Serial.print(dLeft);
+    Serial.print(" RIght: "); 
+    Serial.print(dRight);
+#endif
+    if(closestWall == LFT && dLeft <= SIDE_THRESHOLD_MIN) {
+#ifdef DEBUG
+      Serial.println(" Going Right");
+#endif
+      go(RHT);
+      go(STP);
+      delay(STP_DELAY);
+      go(FWD);
+    }
+    else if(closestWall == RHT && dRight <= SIDE_THRESHOLD_MIN) {
+
+#ifdef DEBUG
+      Serial.println(" Going Left");
+#endif
+      go(LFT);
+      go(STP);
+      delay(STP_DELAY);
+      go(FWD);
+    } else {
+
+#ifdef DEBUG
+      Serial.println(" Going Straight");
+#endif
+      go(FWD);
+    }
   } else { // distance in front is low
-    delay(READ_DELAY);
+#ifdef DEBUG
+      Serial.println(" Going Turning");
+#endif
     dLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
     dRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
     turn(dLeft > dRight ? LFT : RHT);
@@ -95,8 +145,16 @@ float getDistance(int trigPin, int echoPin) {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  distance = pulseIn(echoPin, HIGH)*0.034/2;
-  return distance > 40 ? 60 : distance;
+  duration = pulseIn(echoPin, HIGH,6000);
+  distance = duration*0.034/2;
+#ifdef DEBUG
+  Serial.print(" Actual ");
+  Serial.print(duration); 
+#endif
+  if(distance > 40 || distance == 0) {
+    return 60;
+  }
+  return distance;
 }
 
 void go(Dir dir) {
@@ -117,22 +175,32 @@ void go(Dir dir) {
       break;
     case LFT:
       digitalWrite(MOTOR_L_DIR, LOW);
-      analogWrite(MOTOR_L_PWM, PTURN * LEFT_TURN * TANK_TURN_LEFT);
-      digitalWrite(MOTOR_R_DIR, HIGH);
-      analogWrite(MOTOR_R_PWM, (255-PTURN) * RIGHT_TURN);
+      digitalWrite(MOTOR_L_PWM, LOW);
+      digitalWrite(MOTOR_R_DIR, HIGH); // forward
+      analogWrite(MOTOR_R_PWM, (255-PSTRAIGHT) * RIGHT_STRAIGHT * STRAIGHT * RIGHT_YIELD); // speed
+//      digitalWrite(MOTOR_L_DIR, HIGH); // forward
+//      analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_STRAIGHT * STRAIGHT * LEFT_YIELD); // speed
+//      digitalWrite(MOTOR_R_DIR, HIGH);
+//      analogWrite(MOTOR_R_PWM, (255-PTURN) * RIGHT_STRAIGHT * STRAIGHT);
       delay(LFT_DELAY);
       break;
     case RHT:
-      digitalWrite(MOTOR_L_DIR, HIGH);
-      analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_TURN);
+      digitalWrite(MOTOR_L_DIR, HIGH); // forward
+      analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_STRAIGHT * STRAIGHT * LEFT_YIELD); // speed
       digitalWrite(MOTOR_R_DIR, LOW);
-      analogWrite(MOTOR_R_PWM, PTURN * RIGHT_TURN * TANK_TURN_RIGHT);
+      digitalWrite(MOTOR_R_PWM, LOW);
+    
+//      digitalWrite(MOTOR_L_DIR, HIGH);
+//      analogWrite(MOTOR_L_PWM, (255-PTURN) * LEFT_STRAIGHT * STRAIGHT);
+//      digitalWrite(MOTOR_R_DIR, HIGH); // forward
+//      analogWrite(MOTOR_R_PWM, (255-PSTRAIGHT) * RIGHT_STRAIGHT * STRAIGHT * RIGHT_YIELD); // speed
       delay(RHT_DELAY);
       break;
     case STP:
     default:
       digitalWrite(MOTOR_L_DIR, LOW);
       digitalWrite(MOTOR_L_PWM, LOW);
+      delay(5);
       digitalWrite(MOTOR_R_DIR, LOW);
       digitalWrite(MOTOR_R_PWM, LOW);
       break;
