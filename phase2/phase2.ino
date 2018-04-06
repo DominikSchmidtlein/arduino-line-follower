@@ -41,16 +41,16 @@
 
 // one is full tank turn, 0 is no tank turn
 #define TANK_TURN_LEFT 1.00
-#define TANK_TURN_LEFT_DELAY 30
+#define TANK_TURN_LEFT_DELAY 50
 #define TANK_TURN_RIGHT 1.00
-#define TANK_TURN_RIGHT_DELAY 30
+#define TANK_TURN_RIGHT_DELAY 50
 
 // DISTANCES
 #define THRESHOLD_BUFFER 3
 #define FRONT_THRESHOLD 8
 #define SIDE_THRESHOLD_MIN 9
 #define SIDE_THRESHOLD_MAX 10
-#define TURN_THRESHOLD 5
+#define TURN_THRESHOLD 4
 #define FRONT_SENSOR_OFFSET 3
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
@@ -244,7 +244,8 @@ void go(Dir dir) {
 void turn(Dir dir, float curFront, float curLongSide ) {
   float tdLeft, tdFront, tdRight;
   bool turning = true; 
-  while(turning){ 
+  int maxCount =0;
+  while(turning && maxCount++ < 50){ 
     switch(dir) {
       case LFT:
         digitalWrite(MOTOR_L_DIR, LOW);
@@ -254,7 +255,7 @@ void turn(Dir dir, float curFront, float curLongSide ) {
         delay(TANK_TURN_LEFT_DELAY);
         tdFront = getDistance(TRIG_PIN_F, ECHO_PIN_F) + FRONT_SENSOR_OFFSET;        
         tdRight = getDistance(TRIG_PIN_R, ECHO_PIN_R);
-        if(abs(tdFront - curLongSide) < TURN_THRESHOLD && abs(tdRight - curFront) < TURN_THRESHOLD){
+        if(abs(tdFront - curLongSide) <= TURN_THRESHOLD && abs(tdRight - curFront) <= TURN_THRESHOLD){
           turning = false; 
         }
         break;
@@ -266,7 +267,7 @@ void turn(Dir dir, float curFront, float curLongSide ) {
         delay(TANK_TURN_RIGHT_DELAY);
         tdFront = getDistance(TRIG_PIN_F, ECHO_PIN_F) + FRONT_SENSOR_OFFSET;        
         tdLeft = getDistance(TRIG_PIN_L, ECHO_PIN_L);
-        if(abs(tdFront - curLongSide) < TURN_THRESHOLD && abs(tdLeft - curFront) < TURN_THRESHOLD){
+        if(abs(tdFront - curLongSide) <= TURN_THRESHOLD && abs(tdLeft - curFront) <= TURN_THRESHOLD){
           turning = false; 
         }
         
