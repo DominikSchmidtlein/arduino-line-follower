@@ -1,34 +1,48 @@
 // PINS
+// motor pins
 #define MOTOR_L_PWM 10 // Motor B PWM Speed
 #define MOTOR_L_DIR 9 // Motor B Direction
 #define MOTOR_R_PWM 6 // Motor B PWM Speed
 #define MOTOR_R_DIR 5 // Motor B Direction
+// infrared sensor pins
 #define LEFT_IR A0
 #define RIGHT_IR A1
 
 // POWER LEVELS
+// the power of both wheels in turns
 #define PTURN 255
+// the power of both wheels when going straight
 #define PSTRAIGHT 255
-
-// POWER 
-
+// the power of the left wheel when turning
 #define LEFT_TURN 1
+// the power of the right wheel when turning
 #define RIGHT_TURN 0.9
+// the power of the left wheel when going straight
 #define LEFT_STRAIGHT 1
+// the power of the right wheel when going straight
 #define RIGHT_STRAIGHT 1
 
 // DIRECTION SPECIFIC DELAYS
+// delay after moving in every direction
 #define ALL_DELAY 5
+// delay after going forwards only
 #define FWD_DELAY 0.9
+// delay after going backwards only
 #define RVS_DELAY 4
+// delay after going left only
 #define LFT_DELAY 2
+// delay after going right only
 #define RHT_DELAY 6
 
-
+// the threshold for determining black vs white under IR sensor
 #define IR_THRESHOLD 500
+// the number of reads to IR sensors when debouncing
 #define DEBOUNCE_COUNT 10
+
+// TANK TURN
 // one is full tank turn, 0 is no tank turn
 #define TANK_TURN_LEFT 1
+// when turning right there is a slight bias for the forward wheel so we always make some progress forwards
 #define TANK_TURN_RIGHT 0.9
 
 typedef enum { FWD, RVS, STP, LFT, RHT } Dir;
@@ -62,48 +76,42 @@ void loop() {
   
   left_ir = 0;
   right_ir = 0;
+  // make a series o readings to the IR sensors
   for (i = 0; i < DEBOUNCE_COUNT; i++) {
     left_ir += analogRead(LEFT_IR);
     right_ir += analogRead(RIGHT_IR);
     delay(1);
   }
+  // take average of readings
   left_ir /= DEBOUNCE_COUNT;
   right_ir /= DEBOUNCE_COUNT;
-
+  
+  // interpret ir readings as black or white
   left_col = read_ir(left_ir);
   right_col = read_ir(right_ir);
 
+  // determine next direction based on left and right colors
   dir = navigateLeft(left_col, right_col);
   printDir(dir);
+  // engage motors in correct direction
   motor(dir);
   delay(ALL_DELAY);
 }
 
-Dir navigate(Color left, Color right) {
-  if (left == WHITE && right == WHITE) {
-    return LFT;
-  } else if (left == BLACK && right == WHITE) {
-    return FWD;
-  } else if (left == WHITE && right == BLACK) {
-    return RHT;
-  } else {
-    return RHT;
-  }
-}
-
-
+/*
+ * Make decision on how to move based on left and right sensor readings. Left hand rule implemented here.
+ */
 Dir navigateLeft(Color left, Color right) {
   if (left == WHITE && right == WHITE) {
     return RHT;
-//  } else if (left == BLACK && right == WHITE) {
-//    return LFT;
-//  } else if (left == WHITE && right == BLACK) {
-//    return LFT;
   } else {
     return LFT;
   }
 }
 
+/*
+ * Makes motors move in a direction for a specific amount of time
+ */
 void motor(Dir dir) {
   switch(dir) {
     case FWD:
@@ -135,19 +143,18 @@ void motor(Dir dir) {
       delay(RHT_DELAY);
       break;
     case STP:
-      quick_stop();
+      digitalWrite( MOTOR_L_DIR, LOW );
+      digitalWrite( MOTOR_L_PWM, LOW );
+      digitalWrite( MOTOR_R_DIR, LOW );
+      digitalWrite( MOTOR_R_PWM, LOW );
     default:
       break;
   }
 }
 
-void quick_stop() {
-  digitalWrite( MOTOR_L_DIR, LOW );
-  digitalWrite( MOTOR_L_PWM, LOW );
-  digitalWrite( MOTOR_R_DIR, LOW );
-  digitalWrite( MOTOR_R_PWM, LOW );
-}
-
+/* 
+ *  Interpret IR reading as black or white depending on threshold
+ */
 Color read_ir(int reading) {
   if (reading > IR_THRESHOLD) {
     return BLACK;
