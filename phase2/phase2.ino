@@ -186,8 +186,8 @@ void loop() {
 }
 
 /*
- * Read from the ultrasonic at the provided pins and return a distance in cm
- */
+   Read from the ultrasonic at the provided pins and return a distance in cm
+*/
 float getDistance(int trigPin, int echoPin) {
   unsigned long duration = 0;
   float distance = 0;
@@ -212,8 +212,8 @@ float getDistance(int trigPin, int echoPin) {
 }
 
 /*
- * Go is for gradual movements or adjustments. Wheels will not be moving in opposite direction.
- */
+   Go is for gradual movements or adjustments. Wheels will not be moving in opposite direction.
+*/
 void go(Dir dir) {
   switch (dir) {
     case FWD:
@@ -255,10 +255,10 @@ void go(Dir dir) {
   }
 }
 /*
- * Turn is for sharp turns. Wheels rotate in opposite direction for tank turn effect.
- * Turn until the front sensor matches the previous long side and the short side matches the previous front.
- * This help make more accurate 90 degree turns than timed turns.
- */
+   Turn is for sharp turns. Wheels rotate in opposite direction for tank turn effect.
+   Turn until the front sensor matches the previous long side and the short side matches the previous front.
+   This help make more accurate 90 degree turns than timed turns.
+*/
 void turn(Dir dir, float curFront, float curLongSide ) {
   float tdLeft, tdFront, tdRight;
   bool turning = true;
